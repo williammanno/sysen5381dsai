@@ -190,6 +190,86 @@ def generate_report_docx(word_data):
 
 
 # -----------------------------------------------------------------------------
+# Save AI report in multiple formats (.txt, .md, .html, .docx) — like 05_reporting
+# -----------------------------------------------------------------------------
+
+def get_report_text(word_data):
+    """
+    Get the AI report narrative only (no word data). Returns (text, error).
+    Use this to then save in .txt, .md, .html, or .docx via the helpers below.
+    """
+    if not word_data or not word_data.get("ok"):
+        return None, (word_data.get("error") if word_data else "No word data.") or "No data"
+    summary_text = _build_summary_for_llm(word_data)
+    return _call_ollama(summary_text)
+
+
+def report_to_txt(report_text):
+    """Plain text format. Returns str."""
+    return report_text or ""
+
+
+def report_to_md(report_text):
+    """Markdown format (same content). Returns str."""
+    return report_text or ""
+
+
+def report_to_html(report_text, title="Word Pronunciation AI Report"):
+    """Convert report to HTML (markdown -> HTML with wrapper). Returns str."""
+    if not report_text:
+        return f"<!DOCTYPE html><html><head><meta charset='utf-8'><title>{title}</title></head><body><p>No report content.</p></body></html>"
+    try:
+        import markdown
+        html_content = markdown.markdown(report_text)
+    except Exception:
+        html_content = "<pre>" + (report_text or "").replace("<", "&lt;").replace(">", "&gt;") + "</pre>"
+    return f"""<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>{title}</title>
+    <style>
+        body {{ font-family: Arial, sans-serif; max-width: 800px; margin: 40px auto; padding: 20px; }}
+        h1 {{ color: #333; }}
+        h2 {{ color: #666; margin-top: 30px; }}
+    </style>
+</head>
+<body>
+{html_content}
+</body>
+</html>"""
+
+
+def report_to_docx_ai_only(report_text):
+    """
+    Build a Word document containing only the AI report text.
+    Parses markdown-style lines: # heading 1, ## heading 2, - bullet, else paragraph.
+    Returns bytes.
+    """
+    from docx import Document
+    doc = Document()
+    if not report_text:
+        doc.add_paragraph("No report content.")
+        buf = BytesIO()
+        doc.save(buf)
+        buf.seek(0)
+        return buf.getvalue()
+    for line in report_text.split("\n"):
+        if line.startswith("# "):
+            doc.add_heading(line[2:].strip(), level=1)
+        elif line.startswith("## "):
+            doc.add_heading(line[3:].strip(), level=2)
+        elif line.startswith("- "):
+            doc.add_paragraph(line[2:].strip(), style="List Bullet")
+        elif line.strip():
+            doc.add_paragraph(line.strip())
+    buf = BytesIO()
+    doc.save(buf)
+    buf.seek(0)
+    return buf.getvalue()
+
+
+# -----------------------------------------------------------------------------
 # Run from command line to produce a docx file
 # -----------------------------------------------------------------------------
 if __name__ == "__main__":
