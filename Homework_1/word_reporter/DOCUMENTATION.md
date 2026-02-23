@@ -158,7 +158,7 @@ In the terminal you’ll see a URL (e.g. `http://127.0.0.1:8000`). Open that URL
 
 1. Type a word and click **Look up word**, or use **Starting letter** / **Word length** and the word list, or click **Random word**.
 2. View pronunciations and definitions; use the audio player if available.
-3. Click **Download AI report (.docx)** to get a Word document with the data and an AI summary (may take a minute the first time).
+3. **Save AI reports:** Use **Download full report (.docx)** for the complete report (word data + AI summary), or save the AI report only in multiple formats: **.txt**, **.md**, **.html**, or **.docx** (AI narrative only). The first save for a word may take a minute while Ollama runs; later formats for the same word use a cache.
 
 ### 4. Run the command-line scripts (optional)
 
