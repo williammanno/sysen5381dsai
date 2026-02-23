@@ -9,7 +9,14 @@ from datetime import datetime
 from shiny import App, reactive, render, ui
 
 from api_client import get_word_data, get_api_key
-from ollama_client import generate_report_docx
+from ollama_client import (
+    generate_report_docx,
+    get_report_text,
+    report_to_txt,
+    report_to_md,
+    report_to_html,
+    report_to_docx_ai_only,
+)
 from word_list import get_all_words, filter_words, get_length_range_choices
 
 # -----------------------------------------------------------------------------
@@ -134,6 +141,9 @@ app_ui = ui.page_sidebar(
 def server(input, output, session):
     word_result = reactive.value(None)
     is_loading = reactive.value(False)
+    # Cache AI report text per word so we only call Ollama once when saving in multiple formats
+    report_text_cache = reactive.value(None)
+    report_word_cache = reactive.value(None)
 
     def filtered_words():
         letter_sel = input.letter_filter()
@@ -167,6 +177,8 @@ def server(input, output, session):
     def do_fetch(w: str):
         """Fetch word data and set word_result."""
         is_loading.set(True)
+        report_text_cache.set(None)
+        report_word_cache.set(None)
         try:
             res = get_word_data(w)
             if res.get("ok"):
@@ -302,11 +314,32 @@ def server(input, output, session):
         if prons or defs:
             children.append(
                 ui.tags.div(
-                    ui.download_button("download_report", "Download AI report (.docx)", class_="btn btn-success mt-2"),
+                    ui.tags.h6("Save AI report", class_="mt-3 mb-2"),
+                    ui.tags.p("Full report (word data + AI summary):", class_="small text-muted mb-1"),
+                    ui.download_button("download_report", "Download full report (.docx)", class_="btn btn-success btn-sm me-1 mb-1"),
+                    ui.tags.p("AI report only (multiple formats):", class_="small text-muted mt-2 mb-1"),
+                    ui.download_button("download_txt", ".txt", class_="btn btn-outline-secondary btn-sm me-1 mb-1"),
+                    ui.download_button("download_md", ".md", class_="btn btn-outline-secondary btn-sm me-1 mb-1"),
+                    ui.download_button("download_html", ".html", class_="btn btn-outline-secondary btn-sm me-1 mb-1"),
+                    ui.download_button("download_docx_ai", ".docx", class_="btn btn-outline-secondary btn-sm me-1 mb-1"),
                     class_="mt-2",
                 )
             )
         return ui.tags.div(*children, class_="content-card")
+
+    def _get_cached_report_text():
+        """Return (text, error) for current word; use cache or call Ollama."""
+        res = current_result()
+        if not res or not res.get("ok"):
+            return None, (res.get("error") if res else "No word data.") or "No data"
+        word = res.get("word", "")
+        if report_word_cache.get() == word and report_text_cache.get():
+            return report_text_cache.get(), None
+        text, err = get_report_text(res)
+        if not err and text:
+            report_word_cache.set(word)
+            report_text_cache.set(text)
+        return text, err
 
     @render.download(filename=lambda: f"word_report_{(current_result() or {}).get('word', 'word')}.docx")
     def download_report():
@@ -314,6 +347,38 @@ def server(input, output, session):
         if not res or not res.get("ok"):
             return
         yield generate_report_docx(res)
+
+    @render.download(filename=lambda: f"word_ai_report_{(current_result() or {}).get('word', 'word')}.txt")
+    def download_txt():
+        text, err = _get_cached_report_text()
+        if err:
+            yield f"Error: {err}"
+            return
+        yield report_to_txt(text or "")
+
+    @render.download(filename=lambda: f"word_ai_report_{(current_result() or {}).get('word', 'word')}.md")
+    def download_md():
+        text, err = _get_cached_report_text()
+        if err:
+            yield f"Error: {err}"
+            return
+        yield report_to_md(text or "")
+
+    @render.download(filename=lambda: f"word_ai_report_{(current_result() or {}).get('word', 'word')}.html")
+    def download_html():
+        text, err = _get_cached_report_text()
+        if err:
+            yield report_to_html(f"Error: {err}", title="Report Error")
+            return
+        yield report_to_html(text or "", title=f"Word AI Report — {(current_result() or {}).get('word', 'word')}")
+
+    @render.download(filename=lambda: f"word_ai_report_{(current_result() or {}).get('word', 'word')}.docx")
+    def download_docx_ai():
+        text, err = _get_cached_report_text()
+        if err:
+            yield report_to_docx_ai_only(f"Error: {err}")
+            return
+        yield report_to_docx_ai_only(text or "")
 
 
 # -----------------------------------------------------------------------------
