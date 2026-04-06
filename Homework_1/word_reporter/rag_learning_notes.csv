@@ -1,0 +1,13 @@
+pattern,keywords,when_to_use,memory_tip,example_words
+silent_e,"silent e,long vowel,magic e",Use when a word ends with e and the vowel before it is long,"The e is silent but makes the vowel say its name.",make|time|hope|rate
+vowel_teams,"vowel team,ai,ea,oa",Use when two vowels combine to make one sound,"Two vowels go walking, the first one often does the talking.",team|boat|rain|dream
+th_digraph,"th,digraph",Use for /th/ sounds in function words and nouns,"Put your tongue lightly between teeth to avoid /t/ or /d/.",think|this|father|math
+ch_tch,"ch,tch",Use for /ch/ sound in common words,"tch often follows a short vowel at word end.",chat|watch|match|kitchen
+schwa,"schwa,unstressed vowel",Use for weak vowels in unstressed syllables,"If a syllable is weak, the vowel may reduce to uh (schwa).",about|support|sofa|banana
+prefixes,"prefix,un,re,pre",Use to decode words by parts,"Find the prefix first, then read the base word.",unhappy|preview|rewrite|preheat
+suffixes,"suffix,tion,sion,able,ment",Use when endings change pronunciation or stress,"Read the base word, then add the suffix chunk.",action|vision|comfortable|movement
+stress_shift,"stress,syllable",Use for multi-syllable words where stress changes clarity,"Clap syllables and emphasize the stressed one.",photograph|record|present|pronunciation
+hard_soft_cg,"c,g,soft c,soft g",Use when c/g sounds change before e i y,"c and g are often soft before e, i, y.",city|cycle|giant|gem
+r_controlled,"r-controlled,ar,er,ir,or,ur",Use when vowels are controlled by r,"The r changes the vowel sound and reduces its clarity.",car|her|bird|word
+homophones,"homophone,meaning",Use when words sound alike but meanings differ,"Verify meaning from context, not sound alone.",their|there|to|two
+affix_strategy,"morphology,root,affix",Use for advanced vocabulary learning,"Break into prefix + root + suffix to infer meaning.",impossible|transportation|predictable|biology
