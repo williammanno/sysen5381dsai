@@ -1,0 +1,6 @@
+word,prompt_label,prompt_file,qc_rep,model,qc_model,validator_mode,baseline_json_chars,report_text,generate_error,qc_error,evidence_alignment_index,coverage_of_baseline_facets,clarity_tier,instructional_usefulness_band,mislearning_risk_ordinal,thematic_tags,qualitative_note,meets_benchmark_pass,composite_outcome
+hello,A,prompts/report_prompt_a.md,0,gemma3:latest,llama3.2:3b,fast,420,"- Pronunciation: hə-LOH
+- Meaning: greeting
+- Tip: stress second syllable.",,,88,82,3,6,0,NOVICE_FRIENDLY;ACTIONABLE_COACH,Report tracks baseline IPA and glosses; no invented senses.,True,89.1
+hello,B,prompts/report_prompt_b.md,0,gemma3:latest,llama3.2:3b,fast,420,Headline: common greeting. Pronunciation panel: hə-LOH. Meaning: friendly hello.,,,90,78,4,5,0,STRUCTURED_FORMAT;FAITHFUL_PHON,Structured; minor coverage gap on secondary POS.,True,88.4
+ecology,C,prompts/report_prompt_c.md,0,gemma3:latest,llama3.2:3b,fast,611,Imagine a web of life: ecology maps who eats whom and how habitats connect.,,,72,66,3,5,1,NOVICE_FRIENDLY;RAMBLING,Narrative tone; mostly faithful to baseline definitions.,True,76.2
