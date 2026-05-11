@@ -1,4 +1,5 @@
 results/*.csv
+!results/example_hw3_experiment.csv
 results/*.txt
 __pycache__/
 *.pyc
